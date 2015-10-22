@@ -40,13 +40,15 @@ void setup () {
   start2=loadImage("img/start2.png");
   end1=loadImage("img/end1.png");
   end2=loadImage("img/end2.png");
+//bg 
   bg1x=0;
+  bg2x=-640;
 //fighter
   FX=580;
   FY=230;
 // treasure
-  TX=floor(random(640));
-  TY=floor(random(440));
+  TX=floor(random(600)+20);
+  TY=floor(random(400)+20);
 //enemy
   EX=0;
   EY=floor(random(480));
@@ -88,6 +90,7 @@ void draw() {
   
   switch(gamestate){
     case GAMESTART:
+      hpX=200;
       image(start2,0,0);
       if(mouseX>200&&mouseX<440&&mouseY>375&&mouseY<415){
         if(mousePressed){
@@ -99,10 +102,15 @@ void draw() {
       break;
       
     case GAMERUN:
-
+      //BG
       bg1x=bg1x+2;
-      bg1x=bg1x%640;
-      bg2x=bg1x-640;
+      bg2x=bg2x+2;
+      if(bg1x==640){
+        bg1x=-640;
+      }
+      if(bg2x==640){
+        bg2x=-640;
+      }
       image(bg1,bg1x,0);
       image(bg2,bg2x,0);
       //fighter
@@ -110,9 +118,15 @@ void draw() {
       
       //treasure
       image(treasure,TX,TY);      
-      
+     
       //enemy
       EX=EX+3;
+      if(EY>FY){
+      EY=EY-2;
+      }
+      if(EY<FY){
+      EY=EY+2;
+      }
       image(enemy,EX,EY);
       if(EX>=640){
         EX=0;
@@ -123,12 +137,25 @@ void draw() {
       fill(#ff0000);
       image(hp,20,20);
       //HIT enemy
-      if(FY==EY-50&&EY>FY-50&&EY<=FY+50){
+      if(FX>=EX-50&&FX<=EX+50&&FY>=EY-50&&FY<=EY+50){
         hpX=hpX-40;
+        EX=0;
+        EY=floor(random(480));   
+        image(enemy,EX,EY);
       }
       //HIT treasure  
-      //if()
-
+      if(TX>=FX-50&&TX<=FX+50&&TY>=FY-50&&TY<=FY+50){
+        if(hpX<200){
+          hpX=hpX+20;
+        }
+       TX=floor(random(600)+20);
+       TY=floor(random(400)+20);
+       image(treasure,TX,TY);
+      }
+      //DIE
+      if(hpX<=0){
+        gamestate=GAMEOVER;
+      }
     break;
     
     case GAMEOVER:
